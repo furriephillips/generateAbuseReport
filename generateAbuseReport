@@ -1,0 +1,35 @@
+#!/bin/zsh
+#
+## generateAbuseReport - Identify the abuse contact for a suspect abusive IP address & find any logged abuse
+#
+
+YOURNAME=`whoami`
+YOURLINKEDINUSER="spinelessanon"
+LOGFILES="/var/log/maillog /var/log/secure /var/log/messages /var/log/httpd/www.example.com.access.log /var/log/httpd/www.example.com.error.log"
+ABUSER=$1
+ABUSECONTACTS=`whois ${ABUSER} | grep -e "^OrgAbuseEmail" -e "^abuse-mailbox" | sort | uniq \
+    || whois ${ABUSER} | grep -i 'abuse' \
+    || whois ${ABUSER} | grep "@" \
+    || echo -e "\n\t\e[33;41mGive Up Mate - They don't care.\e[0m"`
+
+echo -e "\n\e[1;35m################################################################################\n
+\e[1;36mTo:\e[0m \e[1;33m${ABUSECONTACTS}\e[0m
+\n\e[1;36mSubject:\e[0m \e[1;33mNetwork Abuse Report - Suspect IP: \e[1;31m${ABUSER}\e[0m
+\n\e[1;36mMessage Body\e[0m
+\n\e[1;33mHi,
+\nRe: Network Abuse Report - Suspect IP: ${ABUSER}
+\n\e[1;33mThe 'whios' abuse contact(s) for abusive IP: ${ABUSER}\e[0m"
+
+echo -e "\n\e[1;35m${ABUSECONTACTS}\e[0m"
+
+echo -e "\n\e[1;33mPlease see the following activity and/or log extract(s), to help you identify and rectify the network abuse.\e[0m\n\e[1;36m########################################\e[0m\n"
+
+sudo grep -h --color=auto ${ABUSER} ${LOGFILES} | grep -v grep | grep --color=auto ${ABUSER}
+
+echo -e "\n\e[1;36m########################################\e[0m\n\e[1;33m--\nRegards,\n$YOURNAME\n
+https://www.linkedin.com/in/$YOURLINKEDINUSER\e[0m
+\n\e[1;35m################################################################################\e[0m"
+
+exit 0
+
+#EOF
