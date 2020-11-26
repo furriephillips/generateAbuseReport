@@ -7,8 +7,7 @@ YOURNAME=`whoami`
 YOURLINKEDINUSER="spinelessanon"
 LOGFILES="/var/log/maillog /var/log/secure /var/log/messages /var/log/httpd/www.example.com.access.log /var/log/httpd/www.example.com.error.log"
 ABUSER=$1
-ABUSECONTACTS=`whois ${ABUSER} | grep -e "^OrgAbuseEmail" -e "^abuse-mailbox" | sort | uniq \
-    || whois ${ABUSER} | grep -i 'abuse' \
+ABUSECONTACTS=`whois ${ABUSER} | grep -i -e "^OrgAbuseEmail" -e "^abuse-mailbox" -e 'abuse' | sort | uniq \
     || whois ${ABUSER} | grep "@" \
     || echo -e "\n\t\e[33;41mGive Up Mate - They don't care.\e[0m"`
 
